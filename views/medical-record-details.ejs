@@ -1,0 +1,191 @@
+<!-- Medical Record Details -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-medical me-2"></i>Medical Record Details
+                </h5>
+                <div>
+                    <button class="btn btn-primary btn-sm me-2 edit-record-btn" data-record-id="<%= record.id %>">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </button>
+                    <a href="/medical-records" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">Visit Information</h6>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Record ID:</strong></td>
+                                <td><%= record.id %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Visit Date:</strong></td>
+                                <td><%= new Date(record.visit_date).toLocaleDateString() %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Visit Time:</strong></td>
+                                <td><%= record.visit_time || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Visit Type:</strong></td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        <%= record.visit_type ? record.visit_type.replace('_', ' ').toUpperCase() : 'N/A' %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td>
+                                    <span class="badge bg-<%= record.status === 'completed' ? 'success' : record.status === 'active' ? 'primary' : 'warning' %>">
+                                        <%= record.status ? record.status.charAt(0).toUpperCase() + record.status.slice(1) : 'N/A' %>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">Patient & Doctor</h6>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Patient:</strong></td>
+                                <td>
+                                    <%= record.patient_first_name %> <%= record.patient_last_name %><br>
+                                    <small class="text-muted">ID: <%= record.patient_id %></small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Doctor:</strong></td>
+                                <td>Dr. <%= record.doctor_first_name %> <%= record.doctor_last_name %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Created:</strong></td>
+                                <td><%= new Date(record.created_at).toLocaleDateString() %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Last Updated:</strong></td>
+                                <td><%= new Date(record.updated_at).toLocaleDateString() %></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/patients/<%= record.patient_id %>" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-user me-2"></i>View Patient Profile
+                    </a>
+                    <a href="/doctors/<%= record.doctor_id %>" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-user-md me-2"></i>View Doctor Profile
+                    </a>
+                    <button class="btn btn-outline-success btn-sm print-record-btn" data-record-id="<%= record.id %>">
+                        <i class="fas fa-print me-2"></i>Print Record
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medical Details -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-stethoscope me-2"></i>Medical Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <h6 class="text-muted">Chief Complaint</h6>
+                        <div class="bg-light p-3 rounded">
+                            <%= record.chief_complaint || 'No chief complaint recorded' %>
+                        </div>
+                    </div>
+                    
+                    <% if (record.symptoms) { %>
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-muted">Symptoms</h6>
+                        <div class="bg-light p-3 rounded">
+                            <%= record.symptoms %>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <% if (record.examination_notes) { %>
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-muted">Physical Examination</h6>
+                        <div class="bg-light p-3 rounded">
+                            <%= record.examination_notes %>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <% if (record.diagnosis) { %>
+                    <div class="col-md-12 mb-4">
+                        <h6 class="text-muted">Diagnosis</h6>
+                        <div class="bg-light p-3 rounded">
+                            <%= record.diagnosis %>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <% if (record.treatment) { %>
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-muted">Treatment Plan</h6>
+                        <div class="bg-light p-3 rounded">
+                            <%= record.treatment %>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <% if (record.prescription) { %>
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-muted">Prescription</h6>
+                        <div class="bg-light p-3 rounded">
+                            <%= record.prescription %>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <% if (record.follow_up_date) { %>
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-muted">Follow-up Date</h6>
+                        <div class="bg-light p-3 rounded">
+                            <%= new Date(record.follow_up_date).toLocaleDateString() %>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <% if (record.notes) { %>
+                    <div class="col-md-12">
+                        <h6 class="text-muted">Additional Notes</h6>
+                        <div class="bg-light p-3 rounded">
+                            <%= record.notes %>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/medical-record-details.js"></script>

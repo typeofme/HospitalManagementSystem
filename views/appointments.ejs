@@ -1,0 +1,231 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Appointments Management</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+        <i class="fas fa-plus me-2"></i>Schedule New Appointment
+    </button>
+</div>
+
+<!-- Filter and Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="statusFilter" class="form-label">Status Filter</label>
+                <select class="form-select" id="statusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="no_show">No Show</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="dateFilter" class="form-label">Date Filter</label>
+                <input type="date" class="form-control" id="dateFilter">
+            </div>
+            <div class="col-md-4">
+                <label for="searchInput" class="form-label">Search</label>
+                <input type="text" class="form-control" id="searchInput" placeholder="Search patient or doctor...">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-outline-secondary w-100 clear-filters-btn">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Appointments Summary -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-calendar-day me-2"></i>Today's Appointments
+                </h5>
+                <div id="todayStats" class="d-flex justify-content-between">
+                    <span>Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointments Table -->
+<div class="card">
+    <div class="card-body">
+        <div id="appointmentsContainer">
+            <% if (appointments && appointments.length > 0) { %>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Appointment #</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date & Time</th>
+                                <th>Duration</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% appointments.forEach(appointment => { %>
+                                <tr data-status="<%= appointment.status %>">
+                                    <td><%= appointment.appointment_number %></td>
+                                    <td>
+                                        <strong><%= appointment.patient_first_name %> <%= appointment.patient_last_name %></strong><br>
+                                        <small class="text-muted">ID: <%= appointment.patient_id %></small>
+                                    </td>
+                                    <td>
+                                        Dr. <%= appointment.doctor_first_name %> <%= appointment.doctor_last_name %><br>
+                                        <small class="text-muted">ID: <%= appointment.employee_id %></small>
+                                    </td>
+                                    <td>
+                                        <%= new Date(appointment.appointment_date).toLocaleString() %>
+                                    </td>
+                                    <td>
+                                        <%= appointment.duration_minutes %> min
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            <%= appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1) %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-<%= appointment.status === 'completed' ? 'success' : appointment.status === 'scheduled' ? 'primary' : appointment.status === 'cancelled' ? 'danger' : 'warning' %>">
+                                            <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1).replace('_', ' ') %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/appointments/<%= appointment.id %>" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="/appointments/<%= appointment.id %>" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <% if (appointment.status === 'scheduled' || appointment.status === 'confirmed') { %>
+                                                <button class="btn btn-sm btn-outline-success update-status-btn" data-appointment-id="<%= appointment.id %>" data-status="in_progress" title="Mark In Progress">
+                                                    <i class="fas fa-play"></i>
+                                                </button>
+                                            <% } %>
+                                            <% if (appointment.status === 'in_progress') { %>
+                                                <button class="btn btn-sm btn-outline-success update-status-btn" data-appointment-id="<%= appointment.id %>" data-status="completed" title="Mark Completed">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <% if (totalPages > 1) { %>
+                    <nav aria-label="Appointments pagination">
+                        <ul class="pagination justify-content-center">
+                            <% if (currentPage > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="/appointments?page=<%= currentPage - 1 %>">Previous</a>
+                                </li>
+                            <% } %>
+                            
+                            <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="/appointments?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                            
+                            <% if (currentPage < totalPages) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="/appointments?page=<%= currentPage + 1 %>">Next</a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                <% } %>
+            <% } else { %>
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No appointments found</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Add Appointment Modal -->
+<div class="modal fade" id="addAppointmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Schedule New Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addAppointmentForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="patient_search" class="form-label">Patient</label>
+                            <input type="text" class="form-control" id="patient_search" placeholder="Search patient...">
+                            <input type="hidden" id="patient_id" name="patient_id" required>
+                            <div id="patientResults" class="mt-2"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="doctor_search" class="form-label">Doctor</label>
+                            <input type="text" class="form-control" id="doctor_search" placeholder="Search doctor...">
+                            <input type="hidden" id="doctor_id" name="doctor_id" required>
+                            <div id="doctorResults" class="mt-2"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="appointment_date" class="form-label">Date & Time</label>
+                            <input type="datetime-local" class="form-control" id="appointment_date" name="appointment_date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="duration_minutes" class="form-label">Duration (minutes)</label>
+                            <select class="form-control" id="duration_minutes" name="duration_minutes">
+                                <option value="15">15 minutes</option>
+                                <option value="30" selected>30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60">1 hour</option>
+                                <option value="90">1.5 hours</option>
+                                <option value="120">2 hours</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label">Type</label>
+                            <select class="form-control" id="type" name="type">
+                                <option value="consultation">Consultation</option>
+                                <option value="follow_up">Follow-up</option>
+                                <option value="emergency">Emergency</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="diagnostic">Diagnostic</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="fee" class="form-label">Fee ($)</label>
+                            <input type="number" step="0.01" class="form-control" id="fee" name="fee" placeholder="0.00">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="reason" class="form-label">Reason for Visit</label>
+                            <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Brief description of the reason for this appointment"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/appointments.js"></script>

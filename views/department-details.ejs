@@ -1,0 +1,168 @@
+<!-- Department Details -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-building me-2"></i>Department Information
+                </h5>
+                <div>
+                    <button class="btn btn-primary btn-sm me-2 edit-department-btn" data-department-id="<%= department.id %>">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </button>
+                    <a href="/departments" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">Basic Information</h6>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Department ID:</strong></td>
+                                <td><%= department.id %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Name:</strong></td>
+                                <td><%= department.name %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Description:</strong></td>
+                                <td><%= department.description || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Head of Department:</strong></td>
+                                <td><%= department.head_of_department || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Location:</strong></td>
+                                <td><%= department.location || '-' %></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">Contact Information</h6>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Phone:</strong></td>
+                                <td><%= department.phone || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td><%= department.email || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Extension:</strong></td>
+                                <td><%= department.extension || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Created:</strong></td>
+                                <td><%= new Date(department.created_at).toLocaleDateString() %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Last Updated:</strong></td>
+                                <td><%= new Date(department.updated_at).toLocaleDateString() %></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Quick Stats
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-12 mb-3">
+                        <h4 class="text-primary mb-0"><%= doctors ? doctors.length : 0 %></h4>
+                        <small class="text-muted">Total Doctors</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-12">
+                        <h4 class="text-info mb-0">
+                            <%= doctors ? doctors.filter(d => d.years_of_experience > 5).length : 0 %>
+                        </h4>
+                        <small class="text-muted">Senior Doctors (5+ years)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Doctors -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>Department Doctors
+                </h5>
+                <a href="/doctors?department=<%= department.id %>" class="btn btn-primary btn-sm">
+                    <i class="fas fa-user-plus me-1"></i>Add Doctor
+                </a>
+            </div>
+            <div class="card-body">
+                <% if (doctors && doctors.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Doctor</th>
+                                    <th>Specialization</th>
+                                    <th>Experience</th>
+                                    <th>Contact</th>
+                                    <th>Schedule</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% doctors.forEach(doctor => { %>
+                                    <tr>
+                                        <td>
+                                            <strong>Dr. <%= doctor.first_name %> <%= doctor.last_name %></strong><br>
+                                            <small class="text-muted">ID: <%= doctor.id %></small>
+                                        </td>
+                                        <td><%= doctor.specialization || '-' %></td>
+                                        <td>
+                                            <%= doctor.years_of_experience || '0' %> years
+                                        </td>
+                                        <td>
+                                            <%= doctor.phone || '-' %><br>
+                                            <small class="text-muted"><%= doctor.email || '-' %></small>
+                                        </td>
+                                        <td><%= doctor.schedule || '-' %></td>
+                                        <td>
+                                            <a href="/doctors/<%= doctor.id %>" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No doctors assigned to this department</p>
+                        <a href="/doctors?department=<%= department.id %>" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i>Add First Doctor
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/department-details.js"></script>

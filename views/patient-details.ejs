@@ -1,0 +1,178 @@
+<!-- Patient Details -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-injured me-2"></i>Patient Information
+                </h5>
+                <div>
+                    <button class="btn btn-primary btn-sm me-2 edit-patient-btn" data-patient-id="<%= patient.id %>">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </button>
+                    <a href="/patients" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">Personal Information</h6>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Patient ID:</strong></td>
+                                <td><%= patient.id %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Patient Number:</strong></td>
+                                <td><%= patient.patient_number || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Name:</strong></td>
+                                <td><%= patient.first_name %> <%= patient.last_name %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Date of Birth:</strong></td>
+                                <td><%= new Date(patient.date_of_birth).toLocaleDateString() %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gender:</strong></td>
+                                <td><%= patient.gender %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phone:</strong></td>
+                                <td><%= patient.phone || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td><%= patient.email || '-' %></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">Address & Contact</h6>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Address:</strong></td>
+                                <td><%= patient.address || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Emergency Contact:</strong></td>
+                                <td><%= patient.emergency_contact || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Emergency Phone:</strong></td>
+                                <td><%= patient.emergency_phone || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Blood Type:</strong></td>
+                                <td><%= patient.blood_type || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Allergies:</strong></td>
+                                <td><%= patient.allergies || '-' %></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Created:</strong></td>
+                                <td><%= new Date(patient.created_at).toLocaleDateString() %></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Quick Stats
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary mb-0"><%= appointments ? appointments.length : 0 %></h4>
+                        <small class="text-muted">Total Appointments</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success mb-0">
+                            <%= appointments ? appointments.filter(a => a.status === 'completed').length : 0 %>
+                        </h4>
+                        <small class="text-muted">Completed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Appointments -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>Appointment History
+                </h5>
+                <a href="/appointments?patient=<%= patient.id %>" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-1"></i>New Appointment
+                </a>
+            </div>
+            <div class="card-body">
+                <% if (appointments && appointments.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Doctor</th>
+                                    <th>Department</th>
+                                    <th>Status</th>
+                                    <th>Reason</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% appointments.forEach(appointment => { %>
+                                    <tr>
+                                        <td>
+                                            <%= new Date(appointment.appointment_date).toLocaleDateString() %><br>
+                                            <small class="text-muted"><%= new Date(appointment.appointment_date).toLocaleTimeString() %></small>
+                                        </td>
+                                        <td>
+                                            Dr. <%= appointment.doctor_first_name %> <%= appointment.doctor_last_name %>
+                                        </td>
+                                        <td><%= appointment.department_name || '-' %></td>
+                                        <td>
+                                            <span class="badge bg-<%= appointment.status === 'completed' ? 'success' : appointment.status === 'scheduled' ? 'primary' : appointment.status === 'cancelled' ? 'danger' : 'warning' %>">
+                                                <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                                            </span>
+                                        </td>
+                                        <td><%= appointment.reason || '-' %></td>
+                                        <td>
+                                            <a href="/appointments/<%= appointment.id %>" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No appointments found for this patient</p>
+                        <a href="/appointments?patient=<%= patient.id %>" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Schedule First Appointment
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/patient-details.js"></script>

@@ -1,0 +1,123 @@
+<!-- Dashboard Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-user-injured fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="card-title">Total Patients</h5>
+                    <h3 class="mb-0"><%= stats.totalPatients %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card-2 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-user-md fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="card-title">Total Doctors</h5>
+                    <h3 class="mb-0"><%= stats.totalDoctors %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card-3 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-calendar-check fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="card-title">Total Appointments</h5>
+                    <h3 class="mb-0"><%= stats.totalAppointments %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card-4 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-calendar-day fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="card-title">Today's Appointments</h5>
+                    <h3 class="mb-0"><%= stats.todaysAppointments %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Appointments -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock me-2"></i>Recent Appointments
+                </h5>
+            </div>
+            <div class="card-body">
+                <% if (recentAppointments && recentAppointments.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Appointment #</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% recentAppointments.forEach(appointment => { %>
+                                    <tr>
+                                        <td><%= appointment.appointment_number %></td>
+                                        <td>
+                                            <strong><%= appointment.patient_first_name %> <%= appointment.patient_last_name %></strong><br>
+                                            <small class="text-muted">ID: <%= appointment.patient_id %></small>
+                                        </td>
+                                        <td>
+                                            Dr. <%= appointment.doctor_first_name %> <%= appointment.doctor_last_name %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(appointment.appointment_date).toLocaleString() %>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-<%= appointment.status === 'completed' ? 'success' : appointment.status === 'scheduled' ? 'primary' : appointment.status === 'cancelled' ? 'danger' : 'warning' %>">
+                                                <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="/appointments/<%= appointment.id %>" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No recent appointments found</p>
+                    </div>
+                <% } %>
+            </div>
+            <div class="card-footer">
+                <a href="/appointments" class="btn btn-primary">
+                    <i class="fas fa-calendar-check me-2"></i>View All Appointments
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
