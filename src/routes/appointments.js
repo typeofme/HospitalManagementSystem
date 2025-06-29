@@ -20,6 +20,9 @@ router.get('/:id', AppointmentController.getAppointmentById);
 // POST /api/appointments - Create new appointment
 router.post('/', AppointmentController.createAppointment);
 
+// POST /api/appointments/validated - Create appointment with stored procedure validation
+router.post('/validated', AppointmentController.createAppointmentWithValidation);
+
 // PUT /api/appointments/:id - Update appointment
 router.put('/:id', AppointmentController.updateAppointment);
 

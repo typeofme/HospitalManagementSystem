@@ -346,4 +346,12 @@ router.get('/treatments', async (req, res) => {
   }
 });
 
+// Database features demo page
+router.get('/database-features', (req, res) => {
+  res.render('database-features', {
+    title: 'Database Features Demo',
+    user: req.session.user
+  });
+});
+
 module.exports = router;

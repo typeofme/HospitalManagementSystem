@@ -35,6 +35,7 @@ app.use(helmet({
         "https://cdn.jsdelivr.net",
         "https://cdnjs.cloudflare.com"
       ],
+      scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: [
         "'self'", 
         "'unsafe-inline'", 
@@ -89,6 +90,9 @@ app.use('/api/departments', require('./routes/departments'));
 app.use('/api/appointments', require('./routes/appointments'));
 app.use('/api/medical-records', require('./routes/medicalRecords'));
 app.use('/api/treatments', require('./routes/treatments'));
+
+// Database features API routes (functions, procedures, views, triggers)
+app.use('/api/database', require('./routes/database'));
 
 // User management API routes
 app.use('/api/users', require('./routes/userApi'));

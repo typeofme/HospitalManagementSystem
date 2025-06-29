@@ -1,0 +1,592 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <h1 class="card-title mb-0">
+            <i class="fas fa-database me-2"></i>Advanced Database Features Demo
+          </h1>
+          <p class="card-text mt-2">
+            Demonstration of Functions, Procedures, Views, and Triggers implementation
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Database Functions Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h3 class="card-title mb-0">
+            <i class="fas fa-function me-2"></i>Database Functions
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Current Patients Count</h5>
+                  <p class="card-text">Function without parameters that returns the count of active patients.</p>
+                  <button class="btn btn-info" id="getPatientsCountBtn">
+                    <i class="fas fa-users me-1"></i>Get Count
+                  </button>
+                  <div id="patientsCountResult" class="mt-3"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Calculate Patient Age</h5>
+                  <p class="card-text">Function with parameters that calculates patient age on a specific date.</p>
+                  <div class="input-group mb-2">
+                    <input type="number" class="form-control" id="patientIdInput" placeholder="Patient ID" min="1">
+                    <input type="date" class="form-control" id="calculationDateInput">
+                  </div>
+                  <button class="btn btn-info" id="calculateAgeBtn">
+                    <i class="fas fa-calculator me-1"></i>Calculate Age
+                  </button>
+                  <div id="patientAgeResult" class="mt-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Database Procedures Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h3 class="card-title mb-0">
+            <i class="fas fa-cogs me-2"></i>Stored Procedures
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Hospital Statistics</h5>
+                  <p class="card-text">Procedure that generates comprehensive hospital statistics using cursors and loops.</p>
+                  <button class="btn btn-success" id="generateStatsBtn">
+                    <i class="fas fa-chart-bar me-1"></i>Generate Stats
+                  </button>
+                  <div id="hospitalStatsResult" class="mt-3"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Book Appointment with Validation</h5>
+                  <p class="card-text">Procedure with IN/OUT parameters that validates and books appointments.</p>
+                  <div class="mb-2">
+                    <input type="number" class="form-control mb-1" id="procPatientId" placeholder="Patient ID" min="1">
+                    <input type="number" class="form-control mb-1" id="procDoctorId" placeholder="Doctor ID" min="1">
+                    <input type="datetime-local" class="form-control mb-1" id="procAppointmentDate">
+                  </div>
+                  <button class="btn btn-success" id="bookAppointmentBtn">
+                    <i class="fas fa-calendar-plus me-1"></i>Book Appointment
+                  </button>
+                  <div id="bookAppointmentResult" class="mt-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Database Views Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-warning text-dark">
+          <h3 class="card-title mb-0">
+            <i class="fas fa-eye me-2"></i>Database Views
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Patient Summary</h5>
+                  <p class="card-text">Horizontal view with patient information and appointment counts.</p>
+                  <button class="btn btn-warning" id="loadPatientSummaryBtn">
+                    <i class="fas fa-list me-1"></i>Load Summary
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Doctor Schedule</h5>
+                  <p class="card-text">Vertical view showing active doctors and their departments.</p>
+                  <button class="btn btn-warning" id="loadDoctorScheduleBtn">
+                    <i class="fas fa-calendar me-1"></i>Load Schedule
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Appointment Details</h5>
+                  <p class="card-text">View within view showing detailed appointment information.</p>
+                  <button class="btn btn-warning" id="loadAppointmentDetailsBtn">
+                    <i class="fas fa-info-circle me-1"></i>Load Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Active Appointments</h5>
+                  <p class="card-text">View with CASCADED CHECK OPTION showing future appointments.</p>
+                  <button class="btn btn-warning" id="loadActiveAppointmentsBtn">
+                    <i class="fas fa-clock me-1"></i>Load Active
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Today's Appointments</h5>
+                  <p class="card-text">View with LOCAL CHECK OPTION showing today's appointments.</p>
+                  <button class="btn btn-warning" id="loadTodayAppointmentsBtn">
+                    <i class="fas fa-calendar-day me-1"></i>Load Today
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Database Triggers Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-danger text-white">
+          <h3 class="card-title mb-0">
+            <i class="fas fa-bolt me-2"></i>Database Triggers & Audit Log
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Test Triggers</h5>
+                  <p class="card-text">Test BEFORE INSERT, AFTER UPDATE, and BEFORE DELETE triggers.</p>
+                  <button class="btn btn-danger" id="testTriggersBtn">
+                    <i class="fas fa-play me-1"></i>Test Triggers
+                  </button>
+                  <div id="triggerTestResult" class="mt-3"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Audit Log</h5>
+                  <p class="card-text">View audit log entries created by triggers.</p>
+                  <button class="btn btn-danger" id="loadAuditLogBtn">
+                    <i class="fas fa-history me-1"></i>Load Audit Log
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Display Area -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-secondary text-white">
+          <h3 class="card-title mb-0">
+            <i class="fas fa-table me-2"></i>Results Display
+          </h3>
+        </div>
+        <div class="card-body">
+          <div id="resultsArea">
+            <p class="text-muted">Click any button above to see results here...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Database Functions
+async function getCurrentPatientsCount() {
+  try {
+    const response = await fetch('/api/database/functions/patients-count');
+    const data = await response.json();
+    
+    if (data.success) {
+      document.getElementById('patientsCountResult').innerHTML = `
+        <div class="alert alert-success">
+          <strong>Result:</strong> ${data.patient_count} active patients
+        </div>
+      `;
+    } else {
+      document.getElementById('patientsCountResult').innerHTML = `
+        <div class="alert alert-danger">Error: ${data.error}</div>
+      `;
+    }
+  } catch (error) {
+    document.getElementById('patientsCountResult').innerHTML = `
+      <div class="alert alert-danger">Error: ${error.message}</div>
+    `;
+  }
+}
+
+async function calculatePatientAge() {
+  const patientId = document.getElementById('patientIdInput').value;
+  const calculationDate = document.getElementById('calculationDateInput').value;
+  
+  if (!patientId) {
+    alert('Please enter a Patient ID');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/database/functions/patient-age', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        patient_id: patientId, 
+        calculation_date: calculationDate 
+      })
+    });
+    const data = await response.json();
+    
+    if (data.success) {
+      document.getElementById('patientAgeResult').innerHTML = `
+        <div class="alert alert-success">
+          <strong>Patient Age:</strong> ${data.patient_age} years
+          <br><small>Calculated on: ${data.calculation_date}</small>
+        </div>
+      `;
+    } else {
+      document.getElementById('patientAgeResult').innerHTML = `
+        <div class="alert alert-danger">Error: ${data.error}</div>
+      `;
+    }
+  } catch (error) {
+    document.getElementById('patientAgeResult').innerHTML = `
+      <div class="alert alert-danger">Error: ${error.message}</div>
+    `;
+  }
+}
+
+// Database Procedures
+async function generateHospitalStats() {
+  try {
+    const response = await fetch('/api/database/procedures/hospital-stats');
+    const data = await response.json();
+    
+    if (data.success) {
+      document.getElementById('hospitalStatsResult').innerHTML = `
+        <div class="alert alert-success">
+          <strong>Hospital Statistics:</strong><br>
+          • Total Patients: ${data.statistics.total_patients}<br>
+          • Total Doctors: ${data.statistics.total_doctors}<br>
+          • Total Appointments: ${data.statistics.total_appointments}<br>
+          • Average Patient Age: ${data.statistics.average_patient_age.toFixed(1)} years
+        </div>
+      `;
+    } else {
+      document.getElementById('hospitalStatsResult').innerHTML = `
+        <div class="alert alert-danger">Error: ${data.error}</div>
+      `;
+    }
+  } catch (error) {
+    document.getElementById('hospitalStatsResult').innerHTML = `
+      <div class="alert alert-danger">Error: ${error.message}</div>
+    `;
+  }
+}
+
+async function bookAppointmentWithValidation() {
+  const patientId = document.getElementById('procPatientId').value;
+  const doctorId = document.getElementById('procDoctorId').value;
+  const appointmentDate = document.getElementById('procAppointmentDate').value;
+  
+  if (!patientId || !doctorId || !appointmentDate) {
+    alert('Please fill all fields');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/database/procedures/book-appointment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        patient_id: patientId, 
+        doctor_id: doctorId, 
+        appointment_date: appointmentDate 
+      })
+    });
+    const data = await response.json();
+    
+    if (data.success) {
+      document.getElementById('bookAppointmentResult').innerHTML = `
+        <div class="alert alert-success">
+          <strong>Success!</strong><br>
+          Appointment ID: ${data.appointment_id}<br>
+          ${data.message}
+        </div>
+      `;
+    } else {
+      document.getElementById('bookAppointmentResult').innerHTML = `
+        <div class="alert alert-danger">Error: ${data.error}</div>
+      `;
+    }
+  } catch (error) {
+    document.getElementById('bookAppointmentResult').innerHTML = `
+      <div class="alert alert-danger">Error: ${error.message}</div>
+    `;
+  }
+}
+
+// Database Views
+async function loadPatientSummary() {
+  try {
+    const response = await fetch('/api/database/views/patient-summary');
+    const data = await response.json();
+    
+    if (data.success) {
+      displayTable(data.data, 'Patient Summary View', ['full_name', 'email', 'age', 'total_appointments']);
+    } else {
+      displayError(data.error);
+    }
+  } catch (error) {
+    displayError(error.message);
+  }
+}
+
+async function loadDoctorSchedule() {
+  try {
+    const response = await fetch('/api/database/views/doctor-schedule');
+    const data = await response.json();
+    
+    if (data.success) {
+      displayTable(data.data, 'Doctor Schedule View', ['doctor_name', 'specialization', 'department_name']);
+    } else {
+      displayError(data.error);
+    }
+  } catch (error) {
+    displayError(error.message);
+  }
+}
+
+async function loadAppointmentDetails() {
+  try {
+    const response = await fetch('/api/database/views/appointment-details');
+    const data = await response.json();
+    
+    if (data.success) {
+      displayTable(data.data, 'Appointment Details View', ['patient_name', 'doctor_name', 'appointment_date', 'status']);
+    } else {
+      displayError(data.error);
+    }
+  } catch (error) {
+    displayError(error.message);
+  }
+}
+
+async function loadActiveAppointments() {
+  try {
+    const response = await fetch('/api/database/views/active-appointments');
+    const data = await response.json();
+    
+    if (data.success) {
+      displayTable(data.data, 'Active Appointments View', ['patient_name', 'doctor_name', 'appointment_date', 'status']);
+    } else {
+      displayError(data.error);
+    }
+  } catch (error) {
+    displayError(error.message);
+  }
+}
+
+async function loadTodayAppointments() {
+  try {
+    const response = await fetch('/api/database/views/today-appointments');
+    const data = await response.json();
+    
+    if (data.success) {
+      displayTable(data.data, "Today's Appointments View", ['patient_name', 'doctor_name', 'appointment_date', 'status']);
+    } else {
+      displayError(data.error);
+    }
+  } catch (error) {
+    displayError(error.message);
+  }
+}
+
+// Database Triggers
+async function testTriggers() {
+  try {
+    const response = await fetch('/api/database/test/triggers', { method: 'POST' });
+    const data = await response.json();
+    
+    if (data.success) {
+      let resultHtml = '<div class="alert alert-info"><strong>Trigger Test Results:</strong><br>';
+      data.test_results.forEach(test => {
+        resultHtml += `• ${test.test}: <span class="badge bg-${test.status.includes('SUCCESS') ? 'success' : 'danger'}">${test.status}</span><br>`;
+      });
+      resultHtml += '</div>';
+      document.getElementById('triggerTestResult').innerHTML = resultHtml;
+    } else {
+      document.getElementById('triggerTestResult').innerHTML = `
+        <div class="alert alert-danger">Error: ${data.error}</div>
+      `;
+    }
+  } catch (error) {
+    document.getElementById('triggerTestResult').innerHTML = `
+      <div class="alert alert-danger">Error: ${error.message}</div>
+    `;
+  }
+}
+
+async function loadAuditLog() {
+  try {
+    const response = await fetch('/api/database/audit-log');
+    const data = await response.json();
+    
+    if (data.success) {
+      displayTable(data.data, 'Audit Log (Trigger Results)', ['table_name', 'operation', 'user', 'timestamp']);
+    } else {
+      displayError(data.error);
+    }
+  } catch (error) {
+    displayError(error.message);
+  }
+}
+
+// Utility functions
+function displayTable(data, title, columns) {
+  if (!data || data.length === 0) {
+    document.getElementById('resultsArea').innerHTML = `
+      <div class="alert alert-info">
+        <h5>${title}</h5>
+        <p>No data found.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = `
+    <div class="table-responsive">
+      <h5>${title}</h5>
+      <table class="table table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+  `;
+  
+  columns.forEach(col => {
+    html += `<th>${col.replace('_', ' ').toUpperCase()}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+  
+  data.slice(0, 10).forEach(row => { // Show first 10 rows
+    html += '<tr>';
+    columns.forEach(col => {
+      let value = row[col];
+      if (col.includes('date') && value) {
+        value = new Date(value).toLocaleString();
+      }
+      html += `<td>${value || 'N/A'}</td>`;
+    });
+    html += '</tr>';
+  });
+  
+  html += '</tbody></table>';
+  if (data.length > 10) {
+    html += `<p class="text-muted">Showing first 10 of ${data.length} records.</p>`;
+  }
+  html += '</div>';
+  
+  document.getElementById('resultsArea').innerHTML = html;
+}
+
+function displayError(error) {
+  document.getElementById('resultsArea').innerHTML = `
+    <div class="alert alert-danger">
+      <h5>Error</h5>
+      <p>${error}</p>
+    </div>
+  `;
+}
+
+// Add event listeners to replace inline onclick handlers
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, setting up event listeners...');
+  
+  // Set default date to today
+  try {
+    document.getElementById('calculationDateInput').value = new Date().toISOString().split('T')[0];
+    document.getElementById('procAppointmentDate').value = new Date(Date.now() + 24*60*60*1000).toISOString().slice(0, 16);
+    console.log('Default dates set successfully');
+  } catch (error) {
+    console.error('Error setting default dates:', error);
+  }
+
+  // Helper function to safely add event listeners
+  function addEventListenerSafely(elementId, eventType, handler) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.addEventListener(eventType, handler);
+      console.log(`Event listener added for ${elementId}`);
+    } else {
+      console.error(`Element not found: ${elementId}`);
+    }
+  }
+
+  // Database Functions
+  addEventListenerSafely('getPatientsCountBtn', 'click', getCurrentPatientsCount);
+  addEventListenerSafely('calculateAgeBtn', 'click', calculatePatientAge);
+  
+  // Database Procedures
+  addEventListenerSafely('generateStatsBtn', 'click', generateHospitalStats);
+  addEventListenerSafely('bookAppointmentBtn', 'click', bookAppointmentWithValidation);
+  
+  // Database Views  
+  addEventListenerSafely('loadPatientSummaryBtn', 'click', loadPatientSummary);
+  addEventListenerSafely('loadDoctorScheduleBtn', 'click', loadDoctorSchedule);
+  addEventListenerSafely('loadAppointmentDetailsBtn', 'click', loadAppointmentDetails);
+  addEventListenerSafely('loadActiveAppointmentsBtn', 'click', loadActiveAppointments);
+  addEventListenerSafely('loadTodayAppointmentsBtn', 'click', loadTodayAppointments);
+  
+  // Database Triggers
+  addEventListenerSafely('testTriggersBtn', 'click', testTriggers);
+  addEventListenerSafely('loadAuditLogBtn', 'click', loadAuditLog);
+  
+  console.log('All event listeners setup completed');
+});
+</script>

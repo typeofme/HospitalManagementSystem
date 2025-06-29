@@ -1,4 +1,5 @@
 const Appointment = require('../models/Appointment');
+const db = require('../../database/connection');
 
 class AppointmentController {
   static async getAllAppointments(req, res) {
@@ -123,6 +124,43 @@ class AppointmentController {
       const appointments = await Appointment.getByDoctor(req.params.doctorId, date);
       res.json(appointments);
     } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  // New method using stored procedure for appointment booking with validation
+  static async createAppointmentWithValidation(req, res) {
+    try {
+      const { patient_id, doctor_id, appointment_date } = req.body;
+      
+      if (!patient_id || !doctor_id || !appointment_date) {
+        return res.status(400).json({ 
+          error: 'Patient ID, Doctor ID, and appointment date are required' 
+        });
+      }
+
+      // Use the stored procedure for validation and booking
+      const result = await db.raw(`
+        CALL BookAppointment(?, ?, ?, @appointment_id, @result_message);
+        SELECT @appointment_id as appointment_id, @result_message as result_message;
+      `, [patient_id, doctor_id, appointment_date]);
+      
+      const procedureResult = result[0][1][0];
+      const appointmentId = procedureResult.appointment_id;
+      const message = procedureResult.result_message;
+      
+      if (appointmentId > 0) {
+        // Fetch the created appointment details
+        const appointment = await Appointment.findById(appointmentId);
+        res.status(201).json({ 
+          ...appointment,
+          message: message
+        });
+      } else {
+        res.status(400).json({ error: message });
+      }
+    } catch (error) {
+      console.error('Error creating appointment with validation:', error);
       res.status(500).json({ error: error.message });
     }
   }

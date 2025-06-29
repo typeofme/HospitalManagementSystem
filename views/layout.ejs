@@ -54,20 +54,9 @@
             z-index: 1000;
             transition: var(--transition);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
-            overflow-y: auto;
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .sidebar-header {
@@ -105,6 +94,22 @@
 
         .sidebar-nav {
             padding: 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 120px; /* Space for footer */
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
         }
 
         .nav-section {
@@ -732,14 +737,12 @@
 
         /* Sidebar Footer */
         .sidebar-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: relative;
             padding: 1.5rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
+            margin-top: auto;
         }
 
         .sidebar-user {
@@ -1019,6 +1022,12 @@
                     <a class="nav-link" href="/treatments">
                         <i class="fas fa-pills"></i>
                         <span>Treatments</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/database-features">
+                        <i class="fas fa-database"></i>
+                        <span>Database Features</span>
                     </a>
                 </div>
             </div>
