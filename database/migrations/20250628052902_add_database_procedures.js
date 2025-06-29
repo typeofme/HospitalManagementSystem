@@ -2,9 +2,9 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
-  return knex.schema.raw(`
-    -- Procedure 1: Generate Hospital Statistics (no parameters)
+exports.up = async function(knex) {
+  // Procedure 1: Generate Hospital Statistics (no parameters)
+  await knex.raw(`
     CREATE PROCEDURE GenerateHospitalStats()
     READS SQL DATA
     BEGIN
@@ -56,9 +56,11 @@ exports.up = function(knex) {
         total_doctors as 'Total Doctors', 
         total_appointments as 'Total Appointments',
         avg_age as 'Average Patient Age';
-    END;
-    
-    -- Procedure 2: Book appointment with validation (with parameters)
+    END
+  `);
+  
+  // Procedure 2: Book appointment with validation (with parameters)
+  await knex.raw(`
     CREATE PROCEDURE BookAppointment(
       IN p_patient_id INT,
       IN p_doctor_id INT,
@@ -119,7 +121,7 @@ exports.up = function(knex) {
           SET p_result_message = CONCAT('Success: Appointment booked with ID ', p_appointment_id);
         END IF;
       END IF;
-    END;
+    END
   `);
 };
 
@@ -127,9 +129,7 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
-  return knex.schema.raw(`
-    DROP PROCEDURE IF EXISTS GenerateHospitalStats;
-    DROP PROCEDURE IF EXISTS BookAppointment;
-  `);
+exports.down = async function(knex) {
+  await knex.raw('DROP PROCEDURE IF EXISTS BookAppointment');
+  await knex.raw('DROP PROCEDURE IF EXISTS GenerateHospitalStats');
 };

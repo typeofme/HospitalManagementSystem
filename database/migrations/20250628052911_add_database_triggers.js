@@ -2,9 +2,9 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
-  return knex.schema.raw(`
-    -- Create audit log table for triggers
+exports.up = async function(knex) {
+  // Create audit log table for triggers
+  await knex.raw(`
     CREATE TABLE IF NOT EXISTS audit_log (
       id INT AUTO_INCREMENT PRIMARY KEY,
       table_name VARCHAR(50),
@@ -13,9 +13,11 @@ exports.up = function(knex) {
       new_values JSON,
       user VARCHAR(50),
       timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-    
-    -- Trigger 1: BEFORE INSERT on appointments - validate scheduling
+    )
+  `);
+  
+  // Trigger 1: BEFORE INSERT on appointments - validate scheduling
+  await knex.raw(`
     CREATE TRIGGER trg_before_appointment_insert
     BEFORE INSERT ON appointments
     FOR EACH ROW
@@ -35,9 +37,11 @@ exports.up = function(knex) {
       IF NEW.duration_minutes IS NULL THEN
         SET NEW.duration_minutes = 30;
       END IF;
-    END;
-    
-    -- Trigger 2: AFTER UPDATE on patients - log changes
+    END
+  `);
+  
+  // Trigger 2: AFTER UPDATE on patients - log changes
+  await knex.raw(`
     CREATE TRIGGER trg_after_patient_update
     AFTER UPDATE ON patients
     FOR EACH ROW
@@ -67,9 +71,11 @@ exports.up = function(knex) {
         ),
         USER()
       );
-    END;
-    
-    -- Trigger 3: BEFORE DELETE on doctors - prevent deletion if has active appointments
+    END
+  `);
+  
+  // Trigger 3: BEFORE DELETE on doctors - prevent deletion if has active appointments
+  await knex.raw(`
     CREATE TRIGGER trg_before_doctor_delete
     BEFORE DELETE ON doctors
     FOR EACH ROW
@@ -105,7 +111,7 @@ exports.up = function(knex) {
         NULL,
         USER()
       );
-    END;
+    END
   `);
 };
 
@@ -113,11 +119,9 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
-  return knex.schema.raw(`
-    DROP TRIGGER IF EXISTS trg_before_appointment_insert;
-    DROP TRIGGER IF EXISTS trg_after_patient_update;
-    DROP TRIGGER IF EXISTS trg_before_doctor_delete;
-    DROP TABLE IF EXISTS audit_log;
-  `);
+exports.down = async function(knex) {
+  await knex.raw('DROP TRIGGER IF EXISTS trg_before_appointment_insert');
+  await knex.raw('DROP TRIGGER IF EXISTS trg_after_patient_update');
+  await knex.raw('DROP TRIGGER IF EXISTS trg_before_doctor_delete');
+  await knex.raw('DROP TABLE IF EXISTS audit_log');
 };
