@@ -26,23 +26,23 @@ Based on the Database Programming course requirements, here's how this project f
 
 #### **TASK 2: Database Programming Features**
 
-##### **Functions (SCPMK 1161508 – 15 points) INCOMPLETE**
+##### **Functions (SCPMK 1161508 – 15 points) ✅ COMPLETE**
 | Requirement | Implementation | Status |
 |-------------|----------------|---------|
-| **Function with no parameters** | `GetCurrentPatientsCount()` | **IMPLEMENTED** |
-| **Function with parameters** | `CalculatePatientAge(patient_id, calculation_date)` | **IMPLEMENTED** |
-| **Execute functions** | `SELECT GetCurrentPatientsCount();` | **NOT IMPLEMENTED** |
-| **Show function list** | `SHOW FUNCTION STATUS WHERE Db = 'hospital_management';` | **NOT IMPLEMENTED** |
+| **Function with no parameters** | `GetCurrentPatientsCount()`, `get_total_doctors()` | ✅ **IMPLEMENTED** |
+| **Function with parameters** | `CalculatePatientAge(patient_id, calculation_date)`, `get_doctors_by_department(dept_id)` | ✅ **IMPLEMENTED** |
+| **Execute functions** | `SELECT GetCurrentPatientsCount(); SELECT get_total_doctors();` | ✅ **IMPLEMENTED** |
+| **Show function list** | `SHOW FUNCTION STATUS WHERE Db = 'hospital_management';` | ✅ **IMPLEMENTED** |
 
-##### **Procedures (SCPMK 1161508 – 15 points) INCOMPLETE**
+##### **Procedures (SCPMK 1161508 – 15 points) ✅ COMPLETE**
 | Requirement | Implementation | Status |
 |-------------|----------------|---------|
-| **Procedure with no parameters** | `GenerateHospitalStats()` with cursor and control flow | **IMPLEMENTED** |
-| **Procedure with parameters** | `BookAppointment(IN, IN, IN, OUT, OUT)` with validation | **IMPLEMENTED** |
-| **Control flow (IF/CASE/LOOP)** | Both procedures include IF statements and loops | **NOT IMPLEMENTED** |
-| **Cursor usage** | `GenerateHospitalStats()` uses cursor for age calculation | **NOT IMPLEMENTED** |
-| **Execute procedures** | `CALL GenerateHospitalStats();` | **NOT IMPLEMENTED** |
-| **Show procedure list** | `SHOW PROCEDURE STATUS WHERE Db = 'hospital_management';` | **NOT IMPLEMENTED** |
+| **Procedure with no parameters** | `GenerateHospitalStats()`, `ArchiveInactiveDoctors()` with cursor | ✅ **IMPLEMENTED** |
+| **Procedure with parameters** | `BookAppointment(IN, IN, IN, OUT, OUT)`, `AssignDoctorToDepartment(IN, IN)` | ✅ **IMPLEMENTED** |
+| **Control flow (IF/CASE/LOOP)** | All procedures include IF statements, loops, and complex logic | ✅ **IMPLEMENTED** |
+| **Cursor usage** | `ArchiveInactiveDoctors()` uses cursor for row-by-row processing | ✅ **IMPLEMENTED** |
+| **Execute procedures** | `CALL GenerateHospitalStats(); CALL ArchiveInactiveDoctors();` | ✅ **IMPLEMENTED** |
+| **Show procedure list** | `SHOW PROCEDURE STATUS WHERE Db = 'hospital_management';` | ✅ **IMPLEMENTED** |
 
 ##### **Triggers (SCPMK 1163809 – 15 points) INCOMPLETE**
 | Requirement | Implementation | Status |
@@ -234,7 +234,7 @@ pbd/
 
 ### ✅ Advanced Database Programming
 
-#### 📊 Functions (2 Functions)
+#### 📊 Functions (4 Functions)
 1. **`GetCurrentPatientsCount()`** - No parameters
    - Returns count of active patients
    - Usage: `SELECT GetCurrentPatientsCount();`
@@ -243,7 +243,15 @@ pbd/
    - Calculates patient age based on birth date
    - Usage: `SELECT CalculatePatientAge(1, CURDATE());`
 
-#### 🔧 Stored Procedures (2 Procedures with Control Flow)
+3. **`get_total_doctors()`** - No parameters
+   - Returns total count of doctors in the system
+   - Usage: `SELECT get_total_doctors();`
+
+4. **`get_doctors_by_department(dept_id)`** - With parameters
+   - Returns count of doctors in a specific department
+   - Usage: `SELECT get_doctors_by_department(1);`
+
+#### 🔧 Stored Procedures (4 Procedures with Control Flow & Cursor)
 1. **`GenerateHospitalStats()`** - No parameters
    - Generates comprehensive hospital statistics
    - Uses cursor for age calculation
@@ -255,6 +263,20 @@ pbd/
    - Uses IF-ELSE control flow
    - Includes conflict detection
    - Usage: `CALL BookAppointment(1, 1, '2024-12-01 10:00:00', @apt_id, @msg);`
+
+3. **`ArchiveInactiveDoctors()`** - No parameters with cursor
+   - Archives doctors inactive for more than 6 months
+   - Uses cursor for row-by-row processing with detailed logging
+   - Includes complex control flow (LOOP, IF statements)
+   - Captures individual doctor details (name, department, inactive days, appointment count)
+   - Usage: `CALL ArchiveInactiveDoctors();`
+
+4. **`AssignDoctorToDepartment(IN doctor_id, IN department_id)`** - With parameters
+   - Assigns doctor to different department with validation
+   - Uses IF-ELSE control flow for validation
+   - Logs department changes with detailed audit trail
+   - Returns structured status and messages
+   - Usage: `CALL AssignDoctorToDepartment(1, 2);`
 
 #### ⚡ Triggers (3 Different Types)
 1. **`trg_before_appointment_insert`** - BEFORE INSERT
@@ -584,11 +606,13 @@ DELETE /api/users/:id            # Delete user
 
 ### Functions Testing
 ```sql
--- Test function with no parameters
+-- Test functions with no parameters
 SELECT GetCurrentPatientsCount() as active_patients;
+SELECT get_total_doctors() as total_doctors;
 
--- Test function with parameters
+-- Test functions with parameters
 SELECT CalculatePatientAge(1, CURDATE()) as patient_age;
+SELECT get_doctors_by_department(1) as doctors_in_dept;
 
 -- List all functions
 SHOW FUNCTION STATUS WHERE Db = 'hospital_management';
@@ -596,15 +620,22 @@ SHOW FUNCTION STATUS WHERE Db = 'hospital_management';
 
 ### Stored Procedures Testing
 ```sql
--- Test procedure with no parameters (includes cursor and control flow)
+-- Test procedures with no parameters (includes cursor and control flow)
 CALL GenerateHospitalStats();
+CALL ArchiveInactiveDoctors();
 
--- Test procedure with parameters (IN/OUT parameters with validation)
+-- Test procedures with parameters (IN/OUT parameters with validation)
 CALL BookAppointment(1, 1, '2024-12-01 10:00:00', @apt_id, @msg);
 SELECT @apt_id as appointment_id, @msg as result_message;
 
+CALL AssignDoctorToDepartment(1, 2);
+
 -- List all procedures
 SHOW PROCEDURE STATUS WHERE Db = 'hospital_management';
+
+-- Check detailed logs from cursor-based procedure
+SELECT * FROM doctor_status_log WHERE action_type = 'archived' ORDER BY created_at DESC;
+SELECT * FROM doctor_status_log WHERE action_type = 'department_change' ORDER BY created_at DESC;
 ```
 
 ### Triggers Verification
