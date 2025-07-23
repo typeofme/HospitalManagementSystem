@@ -9,12 +9,12 @@ exports.up = function(knex) {
     table.string('first_name', 50).notNullable();
     table.string('last_name', 50).notNullable();
     table.string('email', 100).unique();
-    table.string('phone', 20);
+    table.string('phone', 50);
     table.date('date_of_birth').notNullable();
     table.enum('gender', ['male', 'female', 'other']);
     table.text('address');
     table.string('emergency_contact_name', 100);
-    table.string('emergency_contact_phone', 20);
+    table.string('emergency_contact_phone', 50);
     table.string('insurance_number', 50);
     table.string('blood_type', 5);
     table.text('allergies');

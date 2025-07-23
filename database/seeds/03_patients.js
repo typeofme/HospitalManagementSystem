@@ -24,7 +24,7 @@ exports.seed = async function(knex) {
       patient_id: `PAT${String(i).padStart(6, '0')}`,
       first_name: firstName,
       last_name: lastName,
-      email: faker.internet.email({ firstName, lastName }).toLowerCase(),
+      email: faker.internet.email({ firstName, lastName }).toLowerCase() + `.${i}`,
       phone: faker.phone.number('+1-###-###-####'),
       date_of_birth: birthDate.toISOString().split('T')[0],
       gender: faker.helpers.arrayElement(['male', 'female', 'other']),

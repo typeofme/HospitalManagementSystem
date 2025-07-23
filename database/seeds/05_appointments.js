@@ -19,7 +19,7 @@ exports.seed = async function(knex) {
   
   // Create 8000 appointments for large dataset testing
   for (let i = 1; i <= 8000; i++) {
-    const appointmentDate = faker.date.between({ from: '2023-01-01', to: '2025-12-31' });
+    const appointmentDate = faker.date.between({ from: '2025-07-25', to: '2025-12-31' });
     const patientId = faker.number.int({ min: 1, max: 5000 });
     const doctorId = faker.number.int({ min: 1, max: 10 });
     
