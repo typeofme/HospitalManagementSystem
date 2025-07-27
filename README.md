@@ -56,25 +56,27 @@ Based on the Database Programming course requirements, here's how this project f
 | **Execute events** | Triggers fire on INSERT/UPDATE/DELETE operations | ✅ **COMPLETE** |
 | **Show trigger list** | `SHOW TRIGGERS;` | **NOT DONE** |
 
-##### **Indexes (SCPMK 1161510 – 10 points) INCOMPLETE**
+
+##### **Indexes (SCPMK 1161510 – 10 points) ✅ COMPLETE**
 | Requirement | Implementation | Status |
 |-------------|----------------|---------|
 | **Index during table creation** | Primary keys and foreign keys with automatic indexing | ✅ **COMPLETE** |
 | **CREATE INDEX** | `idx_patient_name_email`, `idx_appointment_date_status` | ✅ **COMPLETE** |
 | **ALTER TABLE index** | `idx_doctor_dept_status` on doctors table | ✅ **COMPLETE** |
-| **Composite indexes** | Multi-column indexes implemented | **NOT DONE** |
-| **EXPLAIN statements** | Performance comparison with/without indexes | **NOT DONE** |
-| **Show index list** | `SHOW INDEX FROM table_name;` | **NOT DONE** |
+| **Composite indexes** | Multi-column indexes implemented | ✅ **COMPLETE** |
+| **EXPLAIN statements** | Performance comparison with/without indexes | ✅ **COMPLETE** |
+| **Show index list** | `SHOW INDEX FROM table_name;` | ✅ **COMPLETE** |
 
-##### **Views (SCPMK 1161611 – 10 points) INCOMPLETE**
+
+##### **Views (SCPMK 1161611 – 10 points) ✅ COMPLETE**
 | Requirement | Implementation | Status |
 |-------------|----------------|---------|
-| **Horizontal view** | `patient_summary_view` with aggregated data | **NOT DONE** |
-| **Vertical view** | `doctor_schedule_view` with filtered columns | **NOT DONE** |
-| **View within view** | `appointment_details_view` using other views | **NOT DONE** |
-| **WITH CHECK OPTION** | Cascaded and local check options implemented | **NOT DONE** |
-| **UPDATE/INSERT via views** | Operations through views with validation | **NOT DONE** |
-| **Show view list** | `SHOW FULL TABLES WHERE Table_type = 'VIEW';` | **NOT DONE** |
+| **Horizontal view** | `patient_summary_view` with aggregated data | ✅ **COMPLETE** |
+| **Vertical view** | `doctor_schedule_view` with filtered columns | ✅ **COMPLETE** |
+| **View within view** | `appointment_details_view` using other views | ✅ **COMPLETE** |
+| **WITH CHECK OPTION** | Cascaded and local check options implemented | ✅ **COMPLETE** |
+| **UPDATE/INSERT via views** | Operations through views with validation | ✅ **COMPLETE** |
+| **Show view list** | `SHOW FULL TABLES WHERE Table_type = 'VIEW';` | ✅ **COMPLETE** |
 
 ##### **Database Security (SCPMK 1163812 – 15 points) INCOMPLETE**
 | Requirement | Implementation | Status |
