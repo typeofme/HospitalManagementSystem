@@ -6,6 +6,7 @@ A full featured hospital management system for managing departments, doctors, pa
 https://hospital.typeof.me/
 
 user: admin
+
 pass: admin123
 
 ## Prerequisites
