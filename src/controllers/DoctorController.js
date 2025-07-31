@@ -1,4 +1,5 @@
 const Doctor = require('../models/Doctor');
+const logAction = require('../utils/logAction');
 
 class DoctorController {
   static async getAllDoctors(req, res) {
@@ -31,6 +32,14 @@ class DoctorController {
       };
       
       const doctor = await Doctor.create(doctorData);
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'CREATE',
+        entity: 'Doctor',
+        entityId: doctor.id,
+        description: `Created doctor ${doctor.first_name} ${doctor.last_name}`
+      });
       res.status(201).json(doctor);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -43,6 +52,14 @@ class DoctorController {
       if (!doctor) {
         return res.status(404).json({ error: 'Doctor not found' });
       }
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'UPDATE',
+        entity: 'Doctor',
+        entityId: req.params.id,
+        description: `Updated doctor ID ${req.params.id}`
+      });
       res.json(doctor);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -55,6 +72,14 @@ class DoctorController {
       if (!deleted) {
         return res.status(404).json({ error: 'Doctor not found' });
       }
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'DELETE',
+        entity: 'Doctor',
+        entityId: req.params.id,
+        description: `Deleted doctor ID ${req.params.id}`
+      });
       res.json({ message: 'Doctor deleted successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });

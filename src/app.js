@@ -97,8 +97,12 @@ app.use('/api/database', require('./routes/database'));
 // User management API routes
 app.use('/api/users', require('./routes/userApi'));
 
+
 // User management web routes
 app.use('/users', require('./routes/users'));
+
+// Logs web route
+app.use('/logs', require('./routes/logs'));
 
 // Protected web routes
 app.use('/', requireAuth, require('./routes/web'));
