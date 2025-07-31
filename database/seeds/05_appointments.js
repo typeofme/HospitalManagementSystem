@@ -24,6 +24,7 @@ exports.seed = async function(knex) {
     const from = new Date(now.getTime() + 24 * 60 * 60 * 1000); // tomorrow
     const to = new Date('2025-12-31T23:59:59');
     const appointmentDate = faker.date.between({ from, to });
+    
     const patientId = faker.number.int({ min: 1, max: 5000 });
     const doctorId = faker.number.int({ min: 1, max: 10 });
     

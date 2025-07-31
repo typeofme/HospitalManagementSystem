@@ -11,6 +11,8 @@
     "seed": "knex seed:run",
     "db:setup": "npm run migrate && npm run seed",
     "test": "echo \"Error: no test specified\" && exit 1"
+    ,
+    "build": "echo 'No build step required for Express app on Vercel'"
   },
   "keywords": [],
   "author": "",

@@ -2,6 +2,13 @@
 
 A full featured hospital management system for managing departments, doctors, patients, appointments, medical records, treatments, and users.
 
+# Live Preview
+https://hospital.typeof.me/
+
+user: admin
+
+pass: admin123
+
 ## Prerequisites
 - Node.js (v16 or higher recommended)
 - npm
