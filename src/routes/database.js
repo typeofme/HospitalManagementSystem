@@ -1,3 +1,8 @@
+
+const express = require("express");
+const router = express.Router();
+const DatabaseController = require("../controllers/DatabaseController");
+
 // Show Index List
 router.get("/indexes/list", DatabaseController.showIndexList);
 // Show View List
@@ -5,9 +10,6 @@ router.get("/views/list", DatabaseController.showViewList);
 
 // Insert via View (active_appointments_view)
 router.post("/views/active-appointments/insert", DatabaseController.insertActiveAppointment);
-const express = require("express");
-const router = express.Router();
-const DatabaseController = require("../controllers/DatabaseController");
 
 // Database Functions Routes
 router.get(
@@ -15,6 +17,7 @@ router.get(
   DatabaseController.getCurrentPatientsCount
 );
 router.post("/functions/patient-age", DatabaseController.calculatePatientAge);
+
 router.get("/functions/total-doctors", DatabaseController.getTotalDoctors);
 router.get(
   "/functions/doctors-by-department/:departmentId",
