@@ -393,8 +393,10 @@ SELECT *
 FROM appointment_details_view
 WHERE status IN ('scheduled', 'confirmed', 'in_progress')
   AND appointment_date >= CURDATE();
+WITH CHECK OPTION;
 
 CREATE VIEW today_appointments_view AS
 SELECT *
 FROM active_appointments_view
 WHERE DATE(appointment_date) = CURDATE();
+WITH LOCAL CHECK OPTION;

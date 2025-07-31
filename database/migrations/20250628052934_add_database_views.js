@@ -72,7 +72,7 @@ exports.up = async function(knex) {
     FROM appointment_details_view
     WHERE status IN ('scheduled', 'confirmed', 'in_progress')
     AND appointment_date >= CURDATE()
-    WITH CASCADED CHECK OPTION
+    WITH CHECK OPTION
   `);
 
   // Additional view with WITH CHECK OPTION LOCAL
@@ -81,6 +81,7 @@ exports.up = async function(knex) {
     SELECT *
     FROM active_appointments_view
     WHERE DATE(appointment_date) = CURDATE()
+    WITH LOCAL CHECK OPTION
   `);
 };
 
