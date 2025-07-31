@@ -1,4 +1,5 @@
 const db = require('../../database/connection');
+const logAction = require('../utils/logAction');
 
 class TreatmentController {
   // Get all treatments
@@ -42,7 +43,14 @@ class TreatmentController {
       
       const [id] = await db('treatments').insert(treatmentData);
       const treatment = await db('treatments').where({ id }).first();
-      
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'CREATE',
+        entity: 'Treatment',
+        entityId: id,
+        description: `Created treatment ${treatment.name}`
+      });
       res.status(201).json(treatment);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -60,12 +68,18 @@ class TreatmentController {
       const updated = await db('treatments')
         .where({ id: req.params.id })
         .update(updateData);
-      
       if (!updated) {
         return res.status(404).json({ error: 'Treatment not found' });
       }
-      
       const treatment = await db('treatments').where({ id: req.params.id }).first();
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'UPDATE',
+        entity: 'Treatment',
+        entityId: req.params.id,
+        description: `Updated treatment ID ${req.params.id}`
+      });
       res.json(treatment);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -76,11 +90,17 @@ class TreatmentController {
   static async destroy(req, res) {
     try {
       const deleted = await db('treatments').where({ id: req.params.id }).del();
-      
       if (!deleted) {
         return res.status(404).json({ error: 'Treatment not found' });
       }
-      
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'DELETE',
+        entity: 'Treatment',
+        entityId: req.params.id,
+        description: `Deleted treatment ID ${req.params.id}`
+      });
       res.json({ message: 'Treatment deleted successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });

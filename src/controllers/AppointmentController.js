@@ -1,5 +1,6 @@
 const Appointment = require('../models/Appointment');
 const db = require('../../database/connection');
+const logAction = require('../utils/logAction');
 
 class AppointmentController {
   static async getAllAppointments(req, res) {
@@ -66,9 +67,14 @@ class AppointmentController {
       console.log('Creating appointment with data:', appointmentData); // Debug log
       
       const appointment = await Appointment.create(appointmentData);
-      console.log('Created appointment:', appointment); // Debug log
-      console.log('Created appointment:', appointment); // Debug log
-      
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'CREATE',
+        entity: 'Appointment',
+        entityId: appointment.id,
+        description: `Created appointment for patient ID ${appointment.patient_id}`
+      });
       res.status(201).json(appointment);
     } catch (error) {
       console.error('Error creating appointment:', error);
@@ -82,6 +88,14 @@ class AppointmentController {
       if (!appointment) {
         return res.status(404).json({ error: 'Appointment not found' });
       }
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'UPDATE',
+        entity: 'Appointment',
+        entityId: req.params.id,
+        description: `Updated appointment ID ${req.params.id}`
+      });
       res.json(appointment);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -94,6 +108,14 @@ class AppointmentController {
       if (!deleted) {
         return res.status(404).json({ error: 'Appointment not found' });
       }
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'DELETE',
+        entity: 'Appointment',
+        entityId: req.params.id,
+        description: `Deleted appointment ID ${req.params.id}`
+      });
       res.json({ message: 'Appointment deleted successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });

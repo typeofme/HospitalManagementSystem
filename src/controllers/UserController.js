@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const logAction = require('../utils/logAction');
 
 class UserController {
   // Get all users with pagination
@@ -86,7 +87,14 @@ class UserController {
         role: role || 'staff',
         is_active: is_active !== undefined ? is_active : true
       });
-      
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'CREATE',
+        entity: 'User',
+        entityId: user.id,
+        description: `Created user ${user.username}`
+      });
       res.status(201).json(user);
     } catch (error) {
       console.error('Error creating user:', error);
@@ -135,6 +143,14 @@ class UserController {
       }
       
       const user = await User.update(req.params.id, updateData);
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'UPDATE',
+        entity: 'User',
+        entityId: req.params.id,
+        description: `Updated user ${user.username}`
+      });
       res.json(user);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -152,6 +168,14 @@ class UserController {
       }
       
       await User.delete(req.params.id);
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'DELETE',
+        entity: 'User',
+        entityId: req.params.id,
+        description: `Deleted user with ID ${req.params.id}`
+      });
       res.json({ message: 'User deleted successfully' });
     } catch (error) {
       console.error('Error deleting user:', error);

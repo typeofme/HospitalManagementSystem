@@ -1,4 +1,5 @@
 const db = require('../../database/connection');
+const logAction = require('../utils/logAction');
 
 class DepartmentController {
   // Get all departments
@@ -37,8 +38,15 @@ class DepartmentController {
         phone,
         is_active: is_active !== undefined ? is_active : true
       });
-      
       const department = await db('departments').where({ id }).first();
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'CREATE',
+        entity: 'Department',
+        entityId: id,
+        description: `Created department ${name}`
+      });
       res.status(201).json(department);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -58,8 +66,15 @@ class DepartmentController {
         phone,
         is_active
       });
-      
       const department = await db('departments').where({ id: req.params.id }).first();
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'UPDATE',
+        entity: 'Department',
+        entityId: req.params.id,
+        description: `Updated department ${name}`
+      });
       res.json(department);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -73,6 +88,14 @@ class DepartmentController {
       if (!deleted) {
         return res.status(404).json({ error: 'Department not found' });
       }
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'DELETE',
+        entity: 'Department',
+        entityId: req.params.id,
+        description: `Deleted department ID ${req.params.id}`
+      });
       res.json({ message: 'Department deleted successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });

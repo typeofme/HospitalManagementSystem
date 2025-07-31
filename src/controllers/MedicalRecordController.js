@@ -1,5 +1,6 @@
 const db = require('../../database/connection');
 const MedicalRecord = require('../models/MedicalRecord');
+const logAction = require('../utils/logAction');
 
 class MedicalRecordController {
   // Get all medical records with pagination
@@ -75,8 +76,14 @@ class MedicalRecordController {
       console.log('Creating medical record with data:', req.body); // Debug log
       
       const record = await MedicalRecord.create(req.body);
-      console.log('Successfully created medical record:', record); // Debug log
-      
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'CREATE',
+        entity: 'MedicalRecord',
+        entityId: record.id,
+        description: `Created medical record for patient ID ${record.patient_id}`
+      });
       res.status(201).json(record);
     } catch (error) {
       console.error('Error creating medical record:', error.message); // Debug log
@@ -95,11 +102,9 @@ class MedicalRecordController {
       const updated = await db('medical_records')
         .where({ id: req.params.id })
         .update(updateData);
-      
       if (!updated) {
         return res.status(404).json({ error: 'Medical record not found' });
       }
-      
       const record = await db('medical_records')
         .select(
           'medical_records.*',
@@ -112,7 +117,14 @@ class MedicalRecordController {
         .leftJoin('doctors', 'medical_records.doctor_id', 'doctors.id')
         .where('medical_records.id', req.params.id)
         .first();
-      
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'UPDATE',
+        entity: 'MedicalRecord',
+        entityId: req.params.id,
+        description: `Updated medical record ID ${req.params.id}`
+      });
       res.json(record);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -123,11 +135,17 @@ class MedicalRecordController {
   static async destroy(req, res) {
     try {
       const deleted = await db('medical_records').where({ id: req.params.id }).del();
-      
       if (!deleted) {
         return res.status(404).json({ error: 'Medical record not found' });
       }
-      
+      // Log action
+      await logAction({
+        userId: req.session?.user?.id || null,
+        action: 'DELETE',
+        entity: 'MedicalRecord',
+        entityId: req.params.id,
+        description: `Deleted medical record ID ${req.params.id}`
+      });
       res.json({ message: 'Medical record deleted successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });
