@@ -81,7 +81,6 @@ exports.up = async function(knex) {
     SELECT *
     FROM active_appointments_view
     WHERE DATE(appointment_date) = CURDATE()
-    WITH LOCAL CHECK OPTION
   `);
 };
 
