@@ -71,9 +71,10 @@ exports.up = async function(knex) {
     SELECT *
     FROM appointment_details_view
     WHERE status IN ('scheduled', 'confirmed', 'in_progress')
-      AND appointment_date >= CURDATE()
+    AND appointment_date >= CURDATE()
+    WITH CASCADED CHECK OPTION
   `);
-  
+
   // Additional view with WITH CHECK OPTION LOCAL
   await knex.raw(`
     CREATE VIEW today_appointments_view AS
