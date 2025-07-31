@@ -1,5 +1,4 @@
 const Patient = require('../models/Patient');
-const logAction = require('../utils/logAction');
 
 class PatientController {
   static async getAllPatients(req, res) {
@@ -48,14 +47,6 @@ class PatientController {
       };
       
       const patient = await Patient.create(patientData);
-      // Log action
-      await logAction({
-        userId: req.session?.user?.id || null,
-        action: 'CREATE',
-        entity: 'Patient',
-        entityId: patient.id,
-        description: `Created patient ${patient.first_name} ${patient.last_name}`
-      });
       res.status(201).json(patient);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -68,14 +59,6 @@ class PatientController {
       if (!patient) {
         return res.status(404).json({ error: 'Patient not found' });
       }
-      // Log action
-      await logAction({
-        userId: req.session?.user?.id || null,
-        action: 'UPDATE',
-        entity: 'Patient',
-        entityId: req.params.id,
-        description: `Updated patient ID ${req.params.id}`
-      });
       res.json(patient);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -88,14 +71,6 @@ class PatientController {
       if (!deleted) {
         return res.status(404).json({ error: 'Patient not found' });
       }
-      // Log action
-      await logAction({
-        userId: req.session?.user?.id || null,
-        action: 'DELETE',
-        entity: 'Patient',
-        entityId: req.params.id,
-        description: `Deleted patient ID ${req.params.id}`
-      });
       res.json({ message: 'Patient deleted successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });
