@@ -1,5 +1,9 @@
+DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS patients;
+DROP TABLE IF EXISTS doctors;
+DROP TABLE IF EXISTS departments;
 CREATE TABLE IF NOT EXISTS departments (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE,
   description TEXT,
   head_doctor_name VARCHAR(100),
@@ -10,10 +14,10 @@ CREATE TABLE IF NOT EXISTS departments (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_departments_name (name)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS doctors (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   employee_id VARCHAR(20) NOT NULL UNIQUE,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
@@ -30,16 +34,28 @@ CREATE TABLE IF NOT EXISTS doctors (
   status ENUM('active', 'inactive', 'on_leave') DEFAULT 'active',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
   INDEX idx_doctors_last_first (last_name, first_name),
   INDEX idx_doctors_department_id (department_id),
   INDEX idx_doctors_employee_id (employee_id),
   FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
-);
+) ENGINE=InnoDB;
+
+-- Doctor Status Log Table
+CREATE TABLE IF NOT EXISTS doctor_status_log (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  doctor_id INT UNSIGNED NOT NULL,
+  action_type VARCHAR(50) NOT NULL, -- 'status_change', 'department_change', 'archived'
+  old_value VARCHAR(100),
+  new_value VARCHAR(100),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE,
+  INDEX idx_doctor_status_log_doctor_id_created_at (doctor_id, created_at)
+) ENGINE=InnoDB;
 
 -- Patients Table
 CREATE TABLE IF NOT EXISTS patients (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   patient_id VARCHAR(20) NOT NULL UNIQUE,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
@@ -65,7 +81,7 @@ CREATE TABLE IF NOT EXISTS patients (
 
 -- Appointments Table
 CREATE TABLE IF NOT EXISTS appointments (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   appointment_number VARCHAR(20) NOT NULL UNIQUE,
   patient_id INT UNSIGNED NOT NULL,
   doctor_id INT UNSIGNED NOT NULL,
@@ -87,7 +103,7 @@ CREATE TABLE IF NOT EXISTS appointments (
 
 -- Medical Records Table
 CREATE TABLE IF NOT EXISTS medical_records (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   record_number VARCHAR(20) NOT NULL UNIQUE,
   patient_id INT UNSIGNED NOT NULL,
   doctor_id INT UNSIGNED NOT NULL,
@@ -98,7 +114,19 @@ CREATE TABLE IF NOT EXISTS medical_records (
   physical_examination TEXT,
   diagnosis TEXT,
   treatment_plan TEXT,
-
+  vital_signs_blood_pressure_diastolic INT,
+  vital_signs_heart_rate INT,
+  vital_signs_respiratory_rate INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_medical_records_patient_id (patient_id),
+  INDEX idx_medical_records_doctor_id (doctor_id),
+  INDEX idx_medical_records_visit_date (visit_date),
+  INDEX idx_medical_records_record_number (record_number),
+  FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+  FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE,
+  FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE SET NULL
+);
 
 DELIMITER $$
 CREATE FUNCTION GetCurrentPatientsCount()
@@ -264,23 +292,10 @@ CREATE TABLE IF NOT EXISTS performance_test (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_category_date (category_id, created_at)
 );
-  vital_signs_blood_pressure_diastolic INT,
-  vital_signs_heart_rate INT,
-  vital_signs_respiratory_rate INT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  INDEX idx_medical_records_patient_id (patient_id),
-  INDEX idx_medical_records_doctor_id (doctor_id),
-  INDEX idx_medical_records_visit_date (visit_date),
-  INDEX idx_medical_records_record_number (record_number),
-  FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
-  FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE,
-  FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE SET NULL
-);
 
 -- Treatments Table
 CREATE TABLE IF NOT EXISTS treatments (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   treatment_code VARCHAR(20) NOT NULL UNIQUE,
   name VARCHAR(100) NOT NULL,
   description TEXT,
@@ -392,11 +407,11 @@ CREATE VIEW active_appointments_view AS
 SELECT *
 FROM appointment_details_view
 WHERE status IN ('scheduled', 'confirmed', 'in_progress')
-  AND appointment_date >= CURDATE();
+  AND appointment_date >= CURDATE()
 WITH CHECK OPTION;
 
 CREATE VIEW today_appointments_view AS
 SELECT *
 FROM active_appointments_view
-WHERE DATE(appointment_date) = CURDATE();
+WHERE DATE(appointment_date) = CURDATE()
 WITH LOCAL CHECK OPTION;
