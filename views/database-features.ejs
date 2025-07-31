@@ -175,6 +175,61 @@
               </div>
             </div>
           </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Show View List</h5>
+                  <p class="card-text">Show all views in the database (SHOW FULL TABLES WHERE Table_type = 'VIEW').</p>
+                  <button class="btn btn-secondary" id="showViewListBtn">
+                    <i class="fas fa-list-alt me-1"></i>Show View List
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Show Index List</h5>
+                  <p class="card-text">Show all indexes for a table (SHOW INDEX FROM table_name;).</p>
+                  <form id="showIndexListForm" class="mb-2">
+                    <input type="text" class="form-control mb-1" id="indexTableName" placeholder="Table name (e.g. patients)" required>
+                    <button type="submit" class="btn btn-secondary">
+                      <i class="fas fa-search me-1"></i>Show Index List
+                    </button>
+                  </form>
+                  <div id="showIndexListResult"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">Insert via View</h5>
+                  <p class="card-text">Insert appointment via <b>active_appointments_view</b> (will insert to appointments table if valid).</p>
+                  <form id="insertViaViewForm">
+                    <input type="number" class="form-control mb-1" id="insertPatientId" placeholder="Patient ID" min="1" required>
+                    <input type="number" class="form-control mb-1" id="insertDoctorId" placeholder="Doctor ID" min="1" required>
+                    <input type="datetime-local" class="form-control mb-1" id="insertAppointmentDate" required>
+                    <input type="number" class="form-control mb-1" id="insertDuration" placeholder="Duration (minutes)" min="1">
+                    <input type="text" class="form-control mb-1" id="insertType" placeholder="Type">
+                    <input type="text" class="form-control mb-1" id="insertReason" placeholder="Reason">
+                    <input type="number" class="form-control mb-1" id="insertFee" placeholder="Fee">
+                    <select class="form-control mb-1" id="insertStatus" required>
+                      <option value="scheduled">scheduled</option>
+                      <option value="confirmed">confirmed</option>
+                      <option value="in_progress">in_progress</option>
+                    </select>
+                    <button type="submit" class="btn btn-success mt-2">
+                      <i class="fas fa-plus me-1"></i>Insert Appointment
+                    </button>
+                  </form>
+                  <div id="insertViaViewResult" class="mt-2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
         </div>
       </div>
     </div>
@@ -240,6 +295,84 @@
 </div>
 
 <script>
+// Show Index List
+async function showIndexList(event) {
+  event.preventDefault();
+  const table = document.getElementById('indexTableName').value;
+  if (!table) return;
+  try {
+    const response = await fetch(`/api/database/indexes/list?table=${encodeURIComponent(table)}`);
+    const data = await response.json();
+    if (data.success) {
+      if (!data.indexes || data.indexes.length === 0) {
+        document.getElementById('showIndexListResult').innerHTML = `<div class='alert alert-info'>No indexes found for table <b>${table}</b>.</div>`;
+        return;
+      }
+      let html = `<div class='table-responsive'><h5>Indexes for <b>${table}</b></h5><table class='table table-striped'><thead><tr>`;
+      // Table headers
+      Object.keys(data.indexes[0]).forEach(key => { html += `<th>${key}</th>`; });
+      html += '</tr></thead><tbody>';
+      data.indexes.forEach(idx => {
+        html += '<tr>';
+        Object.values(idx).forEach(val => { html += `<td>${val}</td>`; });
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+      document.getElementById('showIndexListResult').innerHTML = html;
+    } else {
+      document.getElementById('showIndexListResult').innerHTML = `<div class='alert alert-danger'>${data.error}</div>`;
+    }
+  } catch (error) {
+    document.getElementById('showIndexListResult').innerHTML = `<div class='alert alert-danger'>${error.message}</div>`;
+  }
+}
+// Show View List
+async function showViewList() {
+  try {
+    const response = await fetch('/api/database/views/list');
+    const data = await response.json();
+    if (data.success) {
+      let html = `<div class="table-responsive"><h5>Database Views</h5><table class="table table-striped"><thead><tr><th>View Name</th></tr></thead><tbody>`;
+      data.views.forEach(view => {
+        html += `<tr><td>${view}</td></tr>`;
+      });
+      html += '</tbody></table></div>';
+      document.getElementById('resultsArea').innerHTML = html;
+    } else {
+      displayError(data.error);
+    }
+  } catch (error) {
+    displayError(error.message);
+  }
+}
+
+// Insert via View
+async function insertViaView(event) {
+  event.preventDefault();
+  const patient_id = document.getElementById('insertPatientId').value;
+  const doctor_id = document.getElementById('insertDoctorId').value;
+  const appointment_date = document.getElementById('insertAppointmentDate').value;
+  const duration_minutes = document.getElementById('insertDuration').value;
+  const type = document.getElementById('insertType').value;
+  const reason = document.getElementById('insertReason').value;
+  const fee = document.getElementById('insertFee').value;
+  const status = document.getElementById('insertStatus').value;
+  try {
+    const response = await fetch('/api/database/views/active-appointments/insert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patient_id, doctor_id, appointment_date, duration_minutes, type, reason, fee, status })
+    });
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('insertViaViewResult').innerHTML = `<div class='alert alert-success'>${data.message} (ID: ${data.appointment_id})</div>`;
+    } else {
+      document.getElementById('insertViaViewResult').innerHTML = `<div class='alert alert-danger'>${data.error}</div>`;
+    }
+  } catch (error) {
+    document.getElementById('insertViaViewResult').innerHTML = `<div class='alert alert-danger'>${error.message}</div>`;
+  }
+}
 // Database Functions
 async function getCurrentPatientsCount() {
   try {
@@ -546,6 +679,15 @@ function displayError(error) {
 
 // Add event listeners to replace inline onclick handlers
 document.addEventListener('DOMContentLoaded', function() {
+  const showIndexListForm = document.getElementById('showIndexListForm');
+  if (showIndexListForm) {
+    showIndexListForm.addEventListener('submit', showIndexList);
+  }
+  addEventListenerSafely('showViewListBtn', 'click', showViewList);
+  const insertForm = document.getElementById('insertViaViewForm');
+  if (insertForm) {
+    insertForm.addEventListener('submit', insertViaView);
+  }
   console.log('DOM loaded, setting up event listeners...');
   
   // Set default date to today

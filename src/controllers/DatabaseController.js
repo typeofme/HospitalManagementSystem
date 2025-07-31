@@ -1,6 +1,80 @@
 const db = require("../../database/connection");
 
 class DatabaseController {
+  // Show Index List for a table
+  static async showIndexList(req, res) {
+    try {
+      const { table } = req.query;
+      if (!table) {
+        return res.status(400).json({ success: false, error: 'Table name is required.' });
+      }
+      const result = await db.raw(`SHOW INDEX FROM \`${table}\`;`);
+      res.json({
+        success: true,
+        indexes: result[0],
+        message: `Index list for table ${table} retrieved successfully.`
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+  // Show View List
+  static async showViewList(req, res) {
+    try {
+      const result = await db.raw("SHOW FULL TABLES WHERE Table_type = 'VIEW';");
+      // MySQL returns [rows, fields] for raw queries
+      const views = result[0].map(row => {
+        const tableName = Object.values(row)[0];
+        return tableName;
+      });
+      res.json({
+        success: true,
+        views,
+        message: "List of database views retrieved successfully"
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  // Example: Insert into active_appointments_view (will insert into appointments table)
+  static async insertActiveAppointment(req, res) {
+    try {
+      const { patient_id, doctor_id, appointment_date, duration_minutes, type, reason, fee, status } = req.body;
+      // Only allow status that matches the view's filter
+      const allowedStatus = ['scheduled', 'confirmed', 'in_progress'];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Status must be scheduled, confirmed, or in_progress.'
+        });
+      }
+      // Insert into appointments (since view is updatable for simple cases)
+      const [insertId] = await db('appointments').insert({
+        patient_id,
+        doctor_id,
+        appointment_date,
+        duration_minutes,
+        type,
+        reason,
+        fee,
+        status
+      });
+      res.json({
+        success: true,
+        appointment_id: insertId,
+        message: 'Appointment inserted via view (appointments table) successfully.'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
   // Database Functions Implementation
   static async getCurrentPatientsCount(req, res) {
     try {
